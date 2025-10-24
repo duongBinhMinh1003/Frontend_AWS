@@ -18,6 +18,7 @@ import FiltersPage from "./pages/AppPage/FiltersPage";
 import ProjectPage from "./pages/AppPage/ProjectPage";
 import UpcomingPage from "./pages/AppPage/UpcomingPage";
 import CompletedPage from "./pages/AppPage/CompletedPage";
+import TestAPI from "./service/TestAPI";
 function App() {
   return (
     <>
@@ -66,6 +67,7 @@ function App() {
                 element={<CompletedPage></CompletedPage>}
               ></Route>
             </Route>
+            <Route path="testapi" element={<TestAPI></TestAPI>}></Route>
           </Routes>
         </BrowserRouter>
       </GoogleOAuthProvider>

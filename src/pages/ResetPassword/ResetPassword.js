@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { https } from "../../service/api";
+import { https_auth } from "../../service/api";
 export default function ResetPassword() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -22,8 +22,8 @@ export default function ResetPassword() {
 
     try {
       //  Gọi API reset password
-      const response = await https.patch(
-        `/api/auth/v1/reset-password/${emailUser}`,
+      const response = await https_auth.patch(
+        `/v1/reset-password/${emailUser}`,
         {
           otp: OTP,
           password: password,

@@ -12,8 +12,10 @@ import {
   PlusCircleOutlined,
 } from "@ant-design/icons";
 import { Button, Dropdown, Menu } from "antd";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
 import { useLocation, useNavigate } from "react-router-dom";
+import { https_taskflow } from "../../service/api";
 import AddProjectModal from "../Modal/AddProjectModal";
 import AddTaskModal from "../Modal/AddTaskModal";
 import SearchCommandModal from "../Modal/SearchCommandModal";
@@ -26,12 +28,31 @@ export default function Sidebar() {
   const [openSearch, setOpenSearch] = useState(false);
   const navigate = useNavigate();
   const [openAddProject, setOpenAddProject] = useState(false);
+
+  // ✅ Danh sách project từ API
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(false);
+
   // ✅ Sau này call API thật, giờ là dữ liệu mock
-  const [projects] = useState([
-    { id: 1, name: "Fullstack", icon: "📁" },
-    { id: 2, name: "UI Design", icon: "🎨" },
-    { id: 3, name: "Marketing Plan", icon: "📈" },
-  ]);
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        setLoading(true);
+        const res = await https_taskflow.get("/taskflow/v1/projects");
+        if (res.data?.status === 200 && Array.isArray(res.data.data)) {
+          setProjects(res.data.data);
+        } else {
+          console.warn("Unexpected response format:", res.data);
+        }
+      } catch (err) {
+        console.error("❌ Lỗi khi tải danh sách projects:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
+  }, []);
 
   // ✅ Kiểm tra route active
   const isActive = (path) => location.pathname === path;

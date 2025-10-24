@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { https } from "../../service/api";
+import { https_auth } from "../../service/api";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -13,8 +13,8 @@ export default function ForgotPassword() {
 
     try {
       //  Gọi API kiểm tra email
-      const response = await https.get(
-        `/api/auth/v1/check-email?email=${encodeURIComponent(email)}`
+      const response = await https_auth.get(
+        `/v1/check-email?email=${encodeURIComponent(email)}`
       );
 
       // Nếu backend xác nhận email tồn tại
@@ -25,8 +25,8 @@ export default function ForgotPassword() {
         localStorage.setItem("USER_VERIFY", JSON.stringify(email));
 
         // Gọi API gửi mã OTP
-        await https.post(
-          `/api/auth/v1/send-reset-password-otp/${encodeURIComponent(email)}`
+        await https_auth.post(
+          `/v1/send-reset-password-otp/${encodeURIComponent(email)}`
         );
 
         alert(" Mã OTP đã được gửi tới email của bạn!");
