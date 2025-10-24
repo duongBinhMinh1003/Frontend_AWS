@@ -10,8 +10,14 @@ import Spinner from "./component/Spinner/Spinner";
 import ResetPassword from "./pages/ResetPassword/ResetPassword";
 import ForgotPasswordMail from "./pages/ForgotPasswordMail/ForgotPasswordMail";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-import TaskPage from "./pages/TaskPage/TaskPage";
+
 import VerifyAccount from "./pages/RegisterPage/VerifyAccount";
+import InboxPage from "./pages/AppPage/InboxPage";
+import TodayPage from "./pages/AppPage/TodayPage";
+import FiltersPage from "./pages/AppPage/FiltersPage";
+import ProjectPage from "./pages/AppPage/ProjectPage";
+import UpcomingPage from "./pages/AppPage/UpcomingPage";
+import CompletedPage from "./pages/AppPage/CompletedPage";
 function App() {
   return (
     <>
@@ -40,7 +46,26 @@ function App() {
               element={<ResetPassword></ResetPassword>}
             ></Route>
             <Route path="/auth/verify-account" element={<VerifyAccount />} />
-            <Route path="/Task" element={<TaskPage></TaskPage>}></Route>
+            <Route path="/app">
+              <Route path="inbox" element={<InboxPage></InboxPage>}></Route>
+              <Route path="today" element={<TodayPage></TodayPage>}></Route>
+              <Route
+                path="filters"
+                element={<FiltersPage></FiltersPage>}
+              ></Route>
+              <Route
+                path="projects/:projectName"
+                element={<ProjectPage></ProjectPage>}
+              ></Route>
+              <Route
+                path="upcoming"
+                element={<UpcomingPage></UpcomingPage>}
+              ></Route>
+              <Route
+                path="activity"
+                element={<CompletedPage></CompletedPage>}
+              ></Route>
+            </Route>
           </Routes>
         </BrowserRouter>
       </GoogleOAuthProvider>
