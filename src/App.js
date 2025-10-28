@@ -19,6 +19,7 @@ import ProjectPage from "./pages/AppPage/ProjectPage";
 import UpcomingPage from "./pages/AppPage/UpcomingPage";
 import CompletedPage from "./pages/AppPage/CompletedPage";
 import TestAPI from "./service/TestAPI";
+import LoginSuccess from "./pages/LoginPage/LoginSuccess";
 function App() {
   return (
     <>
@@ -55,7 +56,7 @@ function App() {
                 element={<FiltersPage></FiltersPage>}
               ></Route>
               <Route
-                path="projects/:projectName"
+                path="projects/:projectName/:projectId"
                 element={<ProjectPage></ProjectPage>}
               ></Route>
               <Route
@@ -68,6 +69,7 @@ function App() {
               ></Route>
             </Route>
             <Route path="testapi" element={<TestAPI></TestAPI>}></Route>
+            <Route path="/login-success" element={<LoginSuccess />} />
           </Routes>
         </BrowserRouter>
       </GoogleOAuthProvider>

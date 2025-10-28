@@ -21,15 +21,14 @@ export default function FormLogin() {
       });
 
       if (response.status === 200) {
-        console.log("✅ Login success:", response.data);
+        console.log(" Login success:", response.data);
 
         const userData = response.data.data;
 
-        // 👉 Lưu toàn bộ thông tin người dùng + token vào localStorage
         localStorage.setItem("USER_INFO", JSON.stringify(userData));
 
         alert("Đăng nhập thành công!");
-        // Chuyển hướng hoặc cập nhật state ứng dụng
+
         window.location.href = "/app/inbox";
       }
     } catch (error) {

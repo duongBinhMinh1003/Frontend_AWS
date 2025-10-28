@@ -1,5 +1,6 @@
 import { Modal, Input, Select, Switch, Button } from "antd";
 import { useState } from "react";
+import { https_taskflow } from "../../service/api";
 import AboutTeamModal from "./AboutTeamModal";
 import CreateTeamModal from "./CreateTeamModal";
 
@@ -26,11 +27,32 @@ export default function AddProjectModal({ open, onCancel, onAdd }) {
   const [openAboutTeam, setOpenAboutTeam] = useState(false);
   const [teamName, setTeamName] = useState("");
 
-  const handleAdd = () => {
-    if (!name.trim()) return;
-    onAdd({ name, color, workspace, parent, favorite });
-    setName("");
-    onCancel();
+  const handleAdd = async () => {
+    if (!name.trim()) return alert("Please enter a project name");
+
+    try {
+      const payload = {
+        name,
+        isArchived: true,
+      };
+
+      const res = await https_taskflow.post("/v1/projects", payload);
+
+      if (
+        res.data?.status === 200 ||
+        res.status === 200 ||
+        res.status === 201
+      ) {
+        alert("Project added successfully!");
+        onAdd?.(res.data.data || payload);
+        setName("");
+        onCancel();
+      } else {
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+    }
   };
 
   return (

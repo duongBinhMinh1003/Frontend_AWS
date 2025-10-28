@@ -29,7 +29,7 @@ function TestAPI() {
         }
 
         const data = await response.json();
-        setProjects(data);
+        setProjects(data.data);
       } catch (err) {
         setError(err.message);
       } finally {

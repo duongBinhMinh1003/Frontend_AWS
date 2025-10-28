@@ -1,3 +1,4 @@
+// ✅ TaskItem.jsx
 import React, { useState } from "react";
 import {
   Edit2,
@@ -56,9 +57,17 @@ export default function TaskItem({ task, onUpdate }) {
         </div>
       </div>
 
-      {task.description && (
-        <div className="pl-7 pr-2 mt-1 text-xs text-gray-500">
-          {task.description}
+      {(task.description || task.deadline) && (
+        <div className="pl-7 pr-2 mt-1 text-xs flex items-center gap-3">
+          {task.description && (
+            <span className="text-gray-500">{task.description}</span>
+          )}
+          {task.deadline && (
+            <span className="text-red-500 flex items-center gap-1">
+              <CalendarDays size={12} />
+              {new Date(task.deadline).toLocaleDateString()}
+            </span>
+          )}
         </div>
       )}
     </div>

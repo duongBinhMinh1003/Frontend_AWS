@@ -8,9 +8,22 @@ import {
   StarOutlined,
   PrinterOutlined,
 } from "@ant-design/icons";
+
 import { Menu } from "antd";
+import { useNavigate } from "react-router-dom";
 
 export default function UserMenuDropdown() {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    // 🧹 Xoá thông tin người dùng
+    localStorage.removeItem("USER_INFO");
+
+    // 👉 Chuyển hướng ra trang login
+    navigate("/login");
+
+    console.log("Đã đăng xuất thành công!");
+  };
   return (
     <Menu className="rounded-xl p-2 w-64">
       {/* Header */}
@@ -61,7 +74,12 @@ export default function UserMenuDropdown() {
 
       <Menu.Divider />
 
-      <Menu.Item key="logout" icon={<LogoutOutlined />} danger>
+      <Menu.Item
+        onClick={handleLogout}
+        key="logout"
+        icon={<LogoutOutlined />}
+        danger
+      >
         Log out
       </Menu.Item>
 

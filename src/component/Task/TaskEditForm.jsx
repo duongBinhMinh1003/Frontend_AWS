@@ -28,6 +28,7 @@ export default function TaskEditForm({ task, onSave, onCancel }) {
       title: taskName,
       description,
       date: selectedDate,
+
       project: selectedProject,
       priority,
     });
