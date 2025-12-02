@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Switch } from "antd";
+import { https_user } from "../../service/api";
 
 export default function AccountSettings({
   onGotoChangePassword,
@@ -17,13 +18,29 @@ export default function AccountSettings({
     setEditing(false);
   };
 
-  const handleUpdate = () => {
-    setName(tempName);
-    setEditing(false);
+  const handleUpdate = async () => {
+    try {
+      setEditing(false);
 
-    // Update localStorage
-    const updated = { ...dataUser, displayName: tempName };
-    localStorage.setItem("USER_INFO", JSON.stringify(updated));
+      const payload = {
+        avatar: avatarUrl || null, // hoặc state bạn đang dùng để lưu avatar
+        displayName: tempName,
+      };
+
+      // Gọi API cập nhật
+      const res = await https_user.patch(`/v1/accounts/me`, payload);
+
+      // Cập nhật lại UI
+      setName(tempName);
+
+      // Lưu lại localStorage
+      const updated = { ...dataUser, displayName: tempName };
+      localStorage.setItem("USER_INFO", JSON.stringify(updated));
+
+      console.log("Update success:", res.data);
+    } catch (error) {
+      console.error("Update failed:", error);
+    }
   };
 
   return (

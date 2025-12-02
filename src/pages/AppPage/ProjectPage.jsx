@@ -21,9 +21,6 @@ export default function ProjectPage() {
   const [selectedProject, setSelectedProject] = useState(null);
   const [selectedSection, setSelectedSection] = useState(null);
 
-  const idUser = JSON.parse(localStorage.getItem("USER_INFO"));
-  const { id } = idUser;
-
   // ✅ Thêm Task vào section cụ thể
 
   useEffect(() => {
@@ -53,6 +50,21 @@ export default function ProjectPage() {
 
     fetchSections();
   }, [projectId]);
+  const userInfo = localStorage.getItem("USER_INFO");
+
+  if (!userInfo) {
+    console.warn("Không có USER_INFO trong localStorage");
+    return; // ⛔ dừng hàm và không lỗi
+  }
+
+  const parsed = JSON.parse(userInfo);
+
+  if (!parsed || !parsed.id) {
+    console.warn("USER_INFO không hợp lệ hoặc không có id");
+    return; // ⛔ dừng hàm
+  }
+
+  const { id } = parsed; // ✔ an toàn
 
   const handleDeleteTask = (sectionId, taskId) => {
     setSections((prev) =>

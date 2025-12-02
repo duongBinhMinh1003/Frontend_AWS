@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import TaskEditForm from "../Task/TaskEditForm";
 import { https_taskflow } from "../../service/api";
+import { toast } from "sonner";
 
 export default function TaskItem({
   onDeleteTask,
@@ -25,6 +26,7 @@ export default function TaskItem({
   const [isEditing, setIsEditing] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
+  const [checked, setChecked] = useState(task.status === "COMPLETED");
 
   // Đóng menu khi click ra ngoài
   useEffect(() => {
@@ -46,6 +48,29 @@ export default function TaskItem({
   //     console.error("Error deleting task:", error);
   //   }
   // };
+  const handleToggleStatus = async () => {
+    const newStatus = checked ? "PENDING" : "COMPLETED";
+    setChecked(!checked);
+
+    try {
+      await https_taskflow.patch(
+        `/v1/projects/${projectId}/tasks/${task.id}/update-status`,
+        { status: newStatus }
+      );
+
+      // Cập nhật tại parent
+      handleUpdateTask?.(sectionId, { ...task, status: newStatus });
+
+      toast.success("Công việc đã hoàn thành!");
+    } catch (error) {
+      console.error("Update status failed:", error);
+      toast.error("Cập nhật trạng thái thất bại!");
+
+      // revert UI nếu lỗi
+      setChecked(checked);
+    }
+  };
+
   const handleDelete = async () => {
     try {
       await https_taskflow.delete(`/v1/projects/${projectId}/tasks/${task.id}`);
@@ -53,10 +78,10 @@ export default function TaskItem({
       // ✅ cập nhật UI không cần reload
       onDeleteTask(sectionId, task.id);
 
-      alert("Xoá task thành công!");
+      toast.error("Xoá task thành công!");
     } catch (error) {
       console.error("Error deleting task:", error);
-      alert("Xoá task thất bại!");
+      toast.error("Xoá task thất bại!");
     }
   };
 
@@ -81,7 +106,7 @@ export default function TaskItem({
           deadlineSent: !!updatedTask.deadline,
         }
       );
-      alert("Update thành công");
+      toast.error("Update thành công");
       // ✅ notify parent to update UI
       handleUpdateTask?.(sectionId, { ...task, ...updatedTask });
 
@@ -106,7 +131,13 @@ export default function TaskItem({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <GripVertical size={16} className="text-gray-400 cursor-grab" />
-          <input type="checkbox" className="cursor-pointer accent-red-500" />
+          <input
+            type="checkbox"
+            checked={checked}
+            onChange={handleToggleStatus}
+            className="cursor-pointer accent-red-500"
+          />
+
           <span className="text-sm text-gray-800 font-medium">
             {task.title}
           </span>

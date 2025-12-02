@@ -33,12 +33,12 @@ import SearchCommandModal from "../Modal/SearchCommandModal";
 import UserMenuDropdown from "../UserMenu/UserMenuDropdown";
 import SidebarItem from "./SidebarItem";
 import { message } from "antd";
+import { toast } from "sonner";
 export default function Sidebar() {
   const location = useLocation();
   const [selectedSection, setSelectedSection] = useState(null);
-  const idUser = JSON.parse(localStorage.getItem("USER_INFO"));
+
   const [sections, setSections] = useState([]);
-  const { id } = idUser;
   const [showModal, setShowModal] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [openSearch, setOpenSearch] = useState(false);
@@ -49,6 +49,7 @@ export default function Sidebar() {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showProjectMenu, setShowProjectMenu] = useState(false);
+  const [activeProjectId, setActiveProjectId] = useState(null);
 
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editProject, setEditProject] = useState(null);
@@ -85,7 +86,7 @@ export default function Sidebar() {
           )
         );
 
-        alert("Thêm task thành công!");
+        toast.error("Thêm task thành công!");
       }
     } catch (err) {
       console.error("Lỗi khi thêm task:", err);
@@ -117,6 +118,21 @@ export default function Sidebar() {
 
     fetchProjects();
   }, []);
+  const userInfo = localStorage.getItem("USER_INFO");
+
+  if (!userInfo) {
+    console.warn("Không có USER_INFO trong localStorage");
+    return; // ⛔ dừng hàm và không lỗi
+  }
+
+  const parsed = JSON.parse(userInfo);
+
+  if (!parsed || !parsed.id) {
+    console.warn("USER_INFO không hợp lệ hoặc không có id");
+    return; // ⛔ dừng hàm
+  }
+
+  const { id } = parsed; // ✔ an toàn
 
   // ✅ Kiểm tra route active
   const isActive = (path) => location.pathname === path;
@@ -135,7 +151,7 @@ export default function Sidebar() {
           key: "2",
           label: "Browse templates",
           icon: <AppstoreOutlined />,
-          onClick: () => alert("Browse templates clicked"),
+          onClick: () => toast.error("Browse templates clicked"),
         },
       ]}
     />
@@ -159,7 +175,34 @@ export default function Sidebar() {
       }
     } catch (err) {
       console.error("Delete failed", err);
-      alert("Cannot delete project");
+      toast.error("Cannot delete project");
+    }
+  };
+  const archiveProject = async (project) => {
+    if (
+      !window.confirm(
+        `Are you sure you want to archive project: ${project.name}?`
+      )
+    ) {
+      return;
+    }
+
+    try {
+      // Call API update status
+      const res = await https_taskflow.patch(`/v1/projects/${project.id}`, {
+        isArchived: "true",
+      });
+
+      if (res.status === 200 || res.data?.status === 200) {
+        // cập nhật UI – bỏ project ra khỏi list hiện tại
+        setProjects((prev) => prev.filter((p) => p.id !== project.id));
+
+        console.log("Archived:", project.id);
+        toast.success("Project archived");
+      }
+    } catch (err) {
+      console.error("Archive failed", err);
+      toast.error("Cannot archive project");
     }
   };
 
@@ -248,8 +291,19 @@ export default function Sidebar() {
 
           {/* Projects Section */}
           <div className="mt-6 px-2">
-            <div className="flex items-center justify-between mb-1">
-              <div className="text-xs text-gray-500 font-semibold uppercase tracking-wide">
+            <div
+              className={`
+    flex items-center justify-between mb-1 px-3 py-2 rounded-md cursor-pointer
+    transition-colors duration-150 select-none
+    ${
+      isActive("/app/archive")
+        ? "bg-red-50 text-red-600 font-medium"
+        : "text-gray-500 hover:bg-gray-50"
+    }
+  `}
+              onClick={() => navigate("/app/archive")}
+            >
+              <div className="text-xs font-semibold uppercase tracking-wide">
                 My Projects
               </div>
 
@@ -259,28 +313,33 @@ export default function Sidebar() {
                   icon={<PlusOutlined />}
                   size="small"
                   className="hover:bg-gray-100 rounded-md"
+                  onClick={(e) => e.stopPropagation()}
                 />
               </Dropdown>
             </div>
 
-            {projects.map((project) => (
-              <SidebarItem
-                onEdit={(project) => {
-                  setEditProject(project);
-                  setEditModalOpen(true);
-                }}
-                onDeleteProject={deleteProject}
-                key={project.id}
-                icon={<FolderOutlined />}
-                label={project.name}
-                active={isActive(`/app/projects/${project.name}/${project.id}`)}
-                onClick={() =>
-                  navigate(`/app/projects/${project.name}/${project.id}`)
-                }
-                isProject={true}
-                project={project}
-              />
-            ))}
+            {projects
+              .filter((p) => p.isArchived === false)
+              .map((project) => (
+                <SidebarItem
+                  onEdit={(project) => {
+                    setEditProject(project);
+                    setEditModalOpen(true);
+                  }}
+                  onArchiveProject={archiveProject}
+                  onDeleteProject={deleteProject}
+                  key={project.id}
+                  icon={<FolderOutlined />}
+                  label={project.name}
+                  active={activeProjectId === project.id}
+                  onClick={() => {
+                    setActiveProjectId(project.id); // 👈 click để active
+                    navigate(`/app/projects/${project.name}/${project.id}`);
+                  }}
+                  isProject={true}
+                  project={project}
+                />
+              ))}
           </div>
         </div>
       </div>

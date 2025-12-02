@@ -67,8 +67,16 @@ export default function Header() {
 
           {/* Resources */}
           <div className="relative group cursor-pointer">
-            <span>Resources ▾</span>
-            <div className="absolute hidden group-hover:block bg-white shadow-md rounded mt-2 p-3 w-40">
+            <span className="group-hover:text-red-600">Resources ▾</span>
+
+            <div
+              className="
+    absolute left-0 mt-2 w-40 bg-white shadow-md rounded-md p-3
+    opacity-0 pointer-events-none
+    group-hover:opacity-100 group-hover:pointer-events-auto
+    transition-all duration-150
+  "
+            >
               <a href="#" className="block px-2 py-1 hover:bg-gray-100 rounded">
                 Blog
               </a>

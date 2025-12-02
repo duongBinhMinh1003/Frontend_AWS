@@ -3,13 +3,57 @@ import {
   EyeInvisibleOutlined,
   EyeTwoTone,
 } from "@ant-design/icons";
-import { Input, Button } from "antd";
+import { Input, Button, message } from "antd";
 import { useState } from "react";
+import { toast } from "sonner";
+import { https_authupdate } from "../../service/api";
 
 export default function ChangePassword({ onBack }) {
   const [current, setCurrent] = useState("");
   const [newPw, setNewPw] = useState("");
   const [confirm, setConfirm] = useState("");
+  const handleChangePassword = async () => {
+    if (!current || !newPw || !confirm) {
+      return toast.error("Please fill in all fields.");
+    }
+
+    if (newPw.length < 6) {
+      return toast.error("New password must be at least 6 characters.");
+    }
+
+    if (newPw !== confirm) {
+      return toast.error("New passwords do not match.");
+    }
+
+    try {
+      const res = await https_authupdate.patch("/v1/update-password", {
+        oldPassword: current,
+        newPassword: newPw,
+      });
+
+      toast.success("Password updated successfully!");
+
+      // Nếu backend trả token mới thì cập nhật
+      if (res.data?.data?.token) {
+        const user = JSON.parse(localStorage.getItem("USER_INFO")) || {};
+        user.token = res.data.data.token;
+        localStorage.setItem("USER_INFO", JSON.stringify(user));
+      }
+
+      // Reset input
+      setCurrent("");
+      setNewPw("");
+      setConfirm("");
+    } catch (err) {
+      console.error(err);
+
+      if (err.response?.status === 400) {
+        return toast.error("Incorrect old password.");
+      }
+
+      toast.error("Failed to update password.");
+    }
+  };
 
   return (
     <div className="text-gray-700">
@@ -82,7 +126,10 @@ export default function ChangePassword({ onBack }) {
           Cancel
         </button>
 
-        <button className="px-4 py-1.5 rounded bg-[#f8b4a0] text-white text-sm hover:bg-[#f7a58d]">
+        <button
+          onClick={handleChangePassword}
+          className="px-4 py-1.5 rounded bg-[#f8b4a0] text-white text-sm hover:bg-[#f7a58d]"
+        >
           Change password
         </button>
       </div>

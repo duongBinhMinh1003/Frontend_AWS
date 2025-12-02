@@ -11,6 +11,7 @@ export default function SidebarItem({
   isProject,
   project,
   onDeleteProject,
+  onArchiveProject,
   onEdit,
   className = "",
   countClass = "",
@@ -26,6 +27,9 @@ export default function SidebarItem({
         }
         if (key === "edit") {
           onEdit(project); // gọi hàm delete gửi lên Sidebar
+        }
+        if (key === "archive") {
+          onArchiveProject(project); // gọi hàm delete gửi lên Sidebar
         }
       }}
       items={[

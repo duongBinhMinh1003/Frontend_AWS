@@ -1,6 +1,6 @@
 import logo from "./logo.svg";
 import "./App.css";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
 import HomePage from "./pages/HomePage/HomePage";
 import Layout from "./layout/Layout";
 import RegisterPage from "./pages/RegisterPage/RegisterPage";
@@ -20,9 +20,14 @@ import UpcomingPage from "./pages/AppPage/UpcomingPage";
 import CompletedPage from "./pages/AppPage/CompletedPage";
 import TestAPI from "./service/TestAPI";
 import LoginSuccess from "./pages/LoginPage/LoginSuccess";
+import SecureGate from "./layout/SecureGate";
+import { Toaster } from "sonner";
+import ArchivePage from "./pages/AppPage/ArchivePage";
+import UnArchivePage from "./pages/AppPage/UnArchivePgae";
 function App() {
   return (
     <>
+      <Toaster position="top-right" richColors closeButton duration={2500} />
       <GoogleOAuthProvider clientId="100882842939-4lmau4i91h1b6q040efmnm7jun8fue2r.apps.googleusercontent.com">
         <BrowserRouter>
           <Spinner></Spinner>
@@ -48,7 +53,14 @@ function App() {
               element={<ResetPassword></ResetPassword>}
             ></Route>
             <Route path="/auth/verify-account" element={<VerifyAccount />} />
-            <Route path="/app">
+            <Route
+              path="/app"
+              element={
+                <SecureGate>
+                  <Outlet />
+                </SecureGate>
+              }
+            >
               <Route path="inbox" element={<InboxPage></InboxPage>}></Route>
               <Route path="today" element={<TodayPage></TodayPage>}></Route>
               <Route
@@ -59,6 +71,12 @@ function App() {
                 path="projects/:projectName/:projectId"
                 element={<ProjectPage></ProjectPage>}
               ></Route>
+
+              <Route
+                path="archive/:projectName/:projectId"
+                element={<UnArchivePage></UnArchivePage>}
+              ></Route>
+
               <Route
                 path="upcoming"
                 element={<UpcomingPage></UpcomingPage>}
@@ -66,6 +84,11 @@ function App() {
               <Route
                 path="activity"
                 element={<CompletedPage></CompletedPage>}
+              ></Route>
+
+              <Route
+                path="archive"
+                element={<ArchivePage></ArchivePage>}
               ></Route>
             </Route>
             <Route path="testapi" element={<TestAPI></TestAPI>}></Route>

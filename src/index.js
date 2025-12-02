@@ -7,6 +7,7 @@ import SpinnerSlice from "./redux/SpinnerSlice";
 import { configureStore } from "@reduxjs/toolkit";
 import { Provider } from "react-redux";
 import "./i18n";
+import "antd/dist/reset.css";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 export let store = configureStore({

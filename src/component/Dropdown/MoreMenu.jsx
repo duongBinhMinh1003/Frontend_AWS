@@ -7,6 +7,7 @@ import {
   Trash,
 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
+import { toast } from "sonner";
 
 export default function MoreMenu({ onEdit, onDelete, onArchive }) {
   const [open, setOpen] = useState(false);
@@ -44,14 +45,14 @@ export default function MoreMenu({ onEdit, onDelete, onArchive }) {
           </button>
 
           <button
-            onClick={() => alert("Move to...")}
+            onClick={() => toast.error("Move to...")}
             className="flex items-center w-full px-4 py-2 text-gray-700 hover:bg-gray-50"
           >
             <MoveRight size={14} /> <span className="ml-2">Move to…</span>
           </button>
 
           <button
-            onClick={() => alert("Duplicate")}
+            onClick={() => toast.error("Duplicate")}
             className="flex items-center w-full px-4 py-2 text-gray-700 hover:bg-gray-50"
           >
             <CopyPlus size={14} />

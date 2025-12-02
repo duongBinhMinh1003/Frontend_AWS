@@ -5,6 +5,7 @@ import { ChevronDown } from "lucide-react";
 import { DayPicker, getDefaultClassNames } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import InlineAddTaskFormUpComing from "../../component/Modal/InlineAddTaskFormUpComing";
+import { toast } from "sonner";
 
 export default function UpcomingPage() {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -132,7 +133,7 @@ export default function UpcomingPage() {
                       setTaskContent("");
                     }}
                     onAdd={(content) => {
-                      alert(`Added: ${content}`);
+                      toast.error(`Added: ${content}`);
                       setShowAddTaskIndex(null);
                       setTaskContent("");
                     }}

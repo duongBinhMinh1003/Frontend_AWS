@@ -68,17 +68,20 @@ export default function SectionItem({
       {/* Task list */}
       {!collapsed && (
         <div className="mt-2">
-          {section.tasks?.length ? (
-            section.tasks.map((task) => (
-              <TaskItem
-                sectionId={section.id}
-                onDeleteTask={handleDeleteTask}
-                handleUpdateTask={handleUpdateTask}
-                projectId={projectId}
-                key={task.id}
-                task={task}
-              />
-            ))
+          {section.tasks?.filter((task) => task.status === "PENDING").length >
+          0 ? (
+            section.tasks
+              .filter((task) => task.status === "PENDING")
+              .map((task) => (
+                <TaskItem
+                  key={task.id}
+                  task={task}
+                  sectionId={section.id}
+                  projectId={projectId}
+                  onDeleteTask={handleDeleteTask}
+                  handleUpdateTask={handleUpdateTask}
+                />
+              ))
           ) : (
             <p className="text-sm text-gray-400 italic mt-1">No tasks yet</p>
           )}
