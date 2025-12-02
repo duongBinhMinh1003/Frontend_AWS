@@ -28,8 +28,8 @@ export default function TaskEditForm({ task, onSave, onCancel }) {
       title: taskName,
       description,
       priority,
-      startTime: selectedDate ? new Date(selectedDate).toISOString() : null,
-      deadline: selectedDate ? new Date(selectedDate).toISOString() : null,
+      startTime: selectedDate ? selectedDate.toISOString() : null,
+      deadline: selectedDate ? selectedDate.toISOString() : null,
     });
   };
 

@@ -9,6 +9,8 @@ import { Button, Dropdown, Menu } from "antd";
 import UserMenuDropdown from "../UserMenu/UserMenuDropdown";
 
 export default function HeaderSidebar() {
+  const dataUser = JSON.parse(localStorage.getItem("USER_INFO"));
+  const { displayName } = dataUser;
   return (
     <div className="flex items-center justify-between px-4 py-3 border-b">
       <Dropdown
@@ -24,7 +26,7 @@ export default function HeaderSidebar() {
             className="rounded-full w-6 h-6"
           />
           <span className="font-medium text-sm text-gray-700 truncate">
-            Duongbinhminh1003
+            {displayName}
           </span>
           <DownOutlined className="text-xs text-gray-500" />
         </div>

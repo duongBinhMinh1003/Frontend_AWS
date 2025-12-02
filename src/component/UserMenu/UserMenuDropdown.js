@@ -10,11 +10,17 @@ import {
 } from "@ant-design/icons";
 
 import { Menu } from "antd";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import SettingsModal from "../Modal/SettingsModal";
 
 export default function UserMenuDropdown() {
+  const [openSettings, setOpenSettings] = useState(false);
   const navigate = useNavigate();
+  const dataUser = JSON.parse(localStorage.getItem("USER_INFO"));
+  const { displayName } = dataUser || {};
 
+  const handleSettings = () => setOpenSettings(true);
   const handleLogout = () => {
     // 🧹 Xoá thông tin người dùng
     localStorage.removeItem("USER_INFO");
@@ -34,13 +40,17 @@ export default function UserMenuDropdown() {
           className="rounded-full w-10 h-10"
         />
         <div>
-          <div className="font-semibold text-sm">Duongbinhminh10032004</div>
+          <div className="font-semibold text-sm">{displayName}</div>
           <div className="text-xs text-gray-500">1/5 tasks</div>
         </div>
       </div>
 
       {/* Menu Items */}
-      <Menu.Item key="settings" icon={<SettingOutlined />}>
+      <Menu.Item
+        key="settings"
+        icon={<SettingOutlined />}
+        onClick={handleSettings}
+      >
         Settings
       </Menu.Item>
       <Menu.Item key="team" icon={<TeamOutlined />}>
@@ -82,7 +92,11 @@ export default function UserMenuDropdown() {
       >
         Log out
       </Menu.Item>
-
+      {/* Modal Settings */}
+      <SettingsModal
+        open={openSettings}
+        onClose={() => setOpenSettings(false)}
+      />
       <div className="px-3 pt-2 text-[11px] text-gray-400 flex justify-between">
         <span>v9048</span>
         <span>Changelog</span>

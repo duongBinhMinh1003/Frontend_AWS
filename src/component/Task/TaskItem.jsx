@@ -18,6 +18,7 @@ export default function TaskItem({
   onDeleteTask,
   sectionId,
   projectId,
+  handleUpdateTask,
   task,
   onUpdate,
 }) {
@@ -64,6 +65,7 @@ export default function TaskItem({
     setIsEditing(false);
   };
   const handleUpdateTaskAPI = async (updatedTask) => {
+    console.log("updatedTask: ", updatedTask);
     try {
       const res = await https_taskflow.patch(
         `/v1/projects/${projectId}/tasks/${task.id}`,
@@ -81,7 +83,7 @@ export default function TaskItem({
       );
       alert("Update thành công");
       // ✅ notify parent to update UI
-      onUpdate?.(sectionId, { ...task, ...updatedTask });
+      handleUpdateTask?.(sectionId, { ...task, ...updatedTask });
 
       setIsEditing(false);
     } catch (err) {

@@ -1,15 +1,24 @@
 import {
   InboxOutlined,
-  CalendarOutlined,
   FilterOutlined,
   CheckCircleOutlined,
   FolderOutlined,
   SearchOutlined,
   PlusOutlined,
   BellOutlined,
+  MailOutlined,
   AppstoreOutlined,
   DownOutlined,
   PlusCircleOutlined,
+  EditOutlined,
+  StarOutlined,
+  CopyOutlined,
+  ShareAltOutlined,
+  UploadOutlined,
+  DownloadOutlined,
+  CalendarOutlined,
+  HistoryOutlined,
+  DeleteOutlined,
 } from "@ant-design/icons";
 import { Button, Dropdown, Menu } from "antd";
 import { useState, useEffect } from "react";
@@ -19,12 +28,18 @@ import { https_taskflow } from "../../service/api";
 import HeaderSidebar from "../Header/HeaderSidebar";
 import AddProjectModal from "../Modal/AddProjectModal";
 import AddTaskModal from "../Modal/AddTaskModal";
+import EditProjectModal from "../Modal/EditProjectModal";
 import SearchCommandModal from "../Modal/SearchCommandModal";
 import UserMenuDropdown from "../UserMenu/UserMenuDropdown";
 import SidebarItem from "./SidebarItem";
-
+import { message } from "antd";
 export default function Sidebar() {
   const location = useLocation();
+  const [selectedSection, setSelectedSection] = useState(null);
+  const idUser = JSON.parse(localStorage.getItem("USER_INFO"));
+  const [sections, setSections] = useState([]);
+  const { id } = idUser;
+  const [showModal, setShowModal] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [openSearch, setOpenSearch] = useState(false);
   const navigate = useNavigate();
@@ -33,6 +48,55 @@ export default function Sidebar() {
   // ✅ Danh sách project từ API
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [showProjectMenu, setShowProjectMenu] = useState(false);
+
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editProject, setEditProject] = useState(null);
+  const [currentSection, setCurrentSection] = useState(null);
+  const [selectedProject, setSelectedProject] = useState(null);
+  const handleAddTask = async (newTask) => {
+    if (!selectedProject || !selectedSection) {
+      message.warning("Vui lòng chọn Project & Section!");
+      return;
+    }
+
+    try {
+      const res = await https_taskflow.post(
+        `/v1/projects/${selectedProject}/tasks`,
+        {
+          title: newTask.title,
+          description: newTask.description || "",
+          sectionId: selectedSection,
+          deadline: newTask.deadline || null,
+          priority: newTask.priority || "MEDIUM",
+          idAccountAssign: id,
+        }
+      );
+
+      if (res.status === 200 && res.data?.data) {
+        const createdTask = res.data.data;
+
+        // 🟢 Update UI ngay lập tức
+        setSections((prev) =>
+          prev.map((section) =>
+            section.id === selectedSection
+              ? { ...section, tasks: [...section.tasks, createdTask] }
+              : section
+          )
+        );
+
+        alert("Thêm task thành công!");
+      }
+    } catch (err) {
+      console.error("Lỗi khi thêm task:", err);
+      message.error("Lỗi khi thêm task!");
+    } finally {
+      // reset state + đóng modal
+      setShowModal(false);
+      setSelectedProject(null);
+      setSelectedSection(null);
+    }
+  };
 
   // ✅ Sau này call API thật, giờ là dữ liệu mock
   useEffect(() => {
@@ -76,6 +140,36 @@ export default function Sidebar() {
       ]}
     />
   );
+  const deleteProject = async (project) => {
+    if (
+      !window.confirm(
+        `Are you sure you want to delete project: ${project.name}?`
+      )
+    ) {
+      return;
+    }
+
+    try {
+      const res = await https_taskflow.delete(`/v1/projects/${project.id}`);
+
+      if (res.status === 200 || res.data?.status === 200) {
+        // Xóa khỏi UI
+        setProjects((prev) => prev.filter((p) => p.id !== project.id));
+        console.log("Deleted:", project.id);
+      }
+    } catch (err) {
+      console.error("Delete failed", err);
+      alert("Cannot delete project");
+    }
+  };
+
+  const openProjectMenu = (project) => {
+    console.log("Open project menu for:", project);
+
+    // hoặc mở menu thật
+    setSelectedProject(project);
+    setShowProjectMenu(true);
+  };
 
   return (
     <div className="w-64 border-r bg-white flex flex-col justify-between shadow-sm">
@@ -89,17 +183,26 @@ export default function Sidebar() {
             <SidebarItem
               icon={<PlusCircleOutlined />}
               label="Add task"
-              onClick={() => setOpenModal(true)}
+              onClick={() => setShowModal(true)}
             />
-            <AddTaskModal
-              open={openModal}
-              onCancel={() => setOpenModal(false)}
-              onAdd={(task) => {
-                alert("New task:", task);
 
-                setOpenModal(false);
+            <AddTaskModal
+              open={showModal}
+              onCancel={() => {
+                setShowModal(false);
+                setSelectedProject(null);
+                setSelectedSection(null);
+              }}
+              onAdd={handleAddTask}
+              onSelectProjectSection={(data) => {
+                console.log("📌 Selected PROJECT:", data.projectId);
+                console.log("📌 Selected SECTION:", data.sectionId);
+
+                setSelectedProject(data.projectId);
+                setSelectedSection(data.sectionId);
               }}
             />
+
             <SidebarItem
               onClick={() => setOpenSearch(true)}
               icon={<SearchOutlined />}
@@ -160,25 +263,37 @@ export default function Sidebar() {
               </Dropdown>
             </div>
 
-            {/* List of Projects */}
-            <div className="space-y-[2px]">
-              {projects.map((project) => (
-                <SidebarItem
-                  key={project.id}
-                  icon={<FolderOutlined />}
-                  label={`${project.name}`}
-                  active={isActive(
-                    `/app/projects/${project.name}/${project.id}`
-                  )}
-                  onClick={() =>
-                    navigate(`/app/projects/${project.name}/${project.id}`)
-                  }
-                />
-              ))}
-            </div>
+            {projects.map((project) => (
+              <SidebarItem
+                onEdit={(project) => {
+                  setEditProject(project);
+                  setEditModalOpen(true);
+                }}
+                onDeleteProject={deleteProject}
+                key={project.id}
+                icon={<FolderOutlined />}
+                label={project.name}
+                active={isActive(`/app/projects/${project.name}/${project.id}`)}
+                onClick={() =>
+                  navigate(`/app/projects/${project.name}/${project.id}`)
+                }
+                isProject={true}
+                project={project}
+              />
+            ))}
           </div>
         </div>
       </div>
+      <EditProjectModal
+        onUpdated={(id, newName) => {
+          setProjects((prev) =>
+            prev.map((p) => (p.id === id ? { ...p, name: newName } : p))
+          );
+        }}
+        open={editModalOpen}
+        project={editProject}
+        onClose={() => setEditModalOpen(false)}
+      />
 
       {/* Footer */}
       <div className="p-3 text-xs text-gray-400 border-t flex items-center gap-2 hover:text-gray-600 cursor-pointer">

@@ -18,7 +18,13 @@ export let https_taskflow = axios.create({
       "Bearer " + JSON.parse(localStorage.getItem("USER_INFO"))?.token,
   },
 });
-
+export let https_user = axios.create({
+  baseURL: "http://localhost:8081/api/user",
+  headers: {
+    Authorization:
+      "Bearer " + JSON.parse(localStorage.getItem("USER_INFO"))?.token,
+  },
+});
 // // Add a request interceptor
 // https.interceptors.request.use(
 //   function (config) {
