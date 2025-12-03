@@ -8,6 +8,7 @@ import SectionItem from "../../component/Section/SectionItem";
 import { useParams } from "react-router-dom";
 import { https_taskflow } from "../../service/api";
 import { message } from "antd";
+import { toast } from "sonner";
 
 export default function ProjectPage() {
   const [showModal, setShowModal] = useState(false);
@@ -114,11 +115,11 @@ export default function ProjectPage() {
           )
         );
 
-        message.success("Thêm task thành công!");
+        toast.success("Thêm task thành công!");
       }
     } catch (error) {
       console.error("Lỗi khi thêm task:", error);
-      message.error("Lỗi khi thêm task!");
+      toast.error("Lỗi khi thêm task!");
     } finally {
       setShowModal(false);
       setCurrentSection(null);
@@ -146,12 +147,12 @@ export default function ProjectPage() {
         // ✅ Cập nhật lại danh sách section trong UI
         setSections((prev) => [...prev, newSection]);
 
-        console.log("✅ Section added:", newSection);
+        toast.success("Section added");
       } else {
         console.warn("⚠️ API không trả về thành công:", res);
       }
     } catch (error) {
-      console.error("❌ Lỗi khi thêm section:", error);
+      toast.error("Lỗi khi thêm section");
     } finally {
       // ✅ Reset form
       setNewSectionName("");
@@ -206,7 +207,7 @@ export default function ProjectPage() {
         );
       }
     } catch (err) {
-      console.error("Lỗi update section:", err);
+      toast.error("Lỗi update section:", err);
     }
   };
   const handleDeleteSection = async (sectionId) => {
@@ -218,13 +219,13 @@ export default function ProjectPage() {
       if (res.status === 200) {
         // Xóa ngay trong UI
         setSections((prev) => prev.filter((sec) => sec.id !== sectionId));
-        message.success("Section deleted successfully!");
+        toast.success("Section deleted successfully!");
       } else {
-        message.error("Failed to delete section!");
+        toast.error("Failed to delete section!");
       }
     } catch (err) {
       console.error("❌ Error deleting section:", err);
-      message.error("Error deleting section!");
+      toast.error("Error deleting section!");
     }
   };
 

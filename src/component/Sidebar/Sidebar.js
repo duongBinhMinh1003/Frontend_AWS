@@ -275,12 +275,12 @@ export default function Sidebar() {
               label="Upcoming"
               active={isActive("/app/upcoming")}
             />
-            <SidebarItem
+            {/* <SidebarItem
               onClick={() => navigate("/app/filters")}
               icon={<FilterOutlined />}
               label="Filters & Labels"
               active={isActive("/app/filters")}
-            />
+            /> */}
             <SidebarItem
               onClick={() => navigate("/app/activity")}
               icon={<CheckCircleOutlined />}
