@@ -65,7 +65,7 @@ export default function AddTaskModal({
             )}
           >
             <Button icon={<CalendarOutlined />} size="small">
-              {selectedDate ? selectedDate.toString() : "Date"}
+              {selectedDate ? selectedDate.format("DD/MM/YYYY") : "Date"}
             </Button>
           </Dropdown>
 
@@ -108,6 +108,7 @@ export default function AddTaskModal({
                   deadline: selectedDate,
                   project: selectedProject,
                 });
+console.log("Selected:", selectedDate);
 
                 setTaskName("");
                 setDescription("");

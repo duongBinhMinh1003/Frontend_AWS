@@ -7,15 +7,17 @@ import { Share2, LayoutList, MessageSquare } from "lucide-react";
 export default function ProjectHeader() {
   const [openShare, setOpenShare] = useState(false);
   const [openInvite, setOpenInvite] = useState(false);
-  const [openSettings, setOpenSettings] = useState(false);
+  const [openSettings, setOpenSettings] = useState(true);
 
   const [selectedEmail, setSelectedEmail] = useState("");
+ const [selectedId, setSelectedId] = useState("");
+ const handleSelectUser = (user) => {
+  setSelectedEmail(user.email);   // lấy email đúng
+  setSelectedId(user.id)
+  setOpenShare(false);
+  setOpenInvite(true);
+};
 
-  const handleSelectUser = (email) => {
-    setSelectedEmail(email);
-    setOpenShare(false);
-    setOpenInvite(true); // mở modal invite
-  };
 
   const handleInviteDone = () => {
     setOpenInvite(false);
@@ -68,8 +70,9 @@ export default function ProjectHeader() {
       {/* INVITE MODAL */}
       {openInvite && (
         <InviteModal
-          user={{ email: selectedEmail }}
+          user={{ email: selectedEmail,id :selectedId }}
           onClose={() => setOpenInvite(false)}
+          setOpenSettings={setOpenSettings}
           onInvite={handleInviteDone}
         />
       )}

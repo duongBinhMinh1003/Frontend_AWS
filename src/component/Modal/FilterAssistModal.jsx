@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { X, Info, ArrowRight } from "lucide-react";
+import { toast } from "sonner";
 
 export default function FilterAssistModal({ onClose, onSend }) {
   const [filterRequest, setFilterRequest] = useState("");

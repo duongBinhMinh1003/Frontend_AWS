@@ -24,6 +24,7 @@ import SecureGate from "./layout/SecureGate";
 import { Toaster } from "sonner";
 import ArchivePage from "./pages/AppPage/ArchivePage";
 import UnArchivePage from "./pages/AppPage/UnArchivePgae";
+import NotificationsPage from "./pages/AppPage/NotificationPage";
 function App() {
   return (
     <>
@@ -56,9 +57,10 @@ function App() {
             <Route
               path="/app"
               element={
-                // <SecureGate>
-                // </SecureGate>
+                
+                <SecureGate>
                 <Outlet />
+                </SecureGate>
               }
             >
               <Route path="inbox" element={<InboxPage></InboxPage>}></Route>
@@ -81,6 +83,10 @@ function App() {
                 path="upcoming"
                 element={<UpcomingPage></UpcomingPage>}
               ></Route>
+               <Route
+                                path="notifications"
+                                element={<NotificationsPage></NotificationsPage>}
+                            ></Route>
               <Route
                 path="activity"
                 element={<CompletedPage></CompletedPage>}
